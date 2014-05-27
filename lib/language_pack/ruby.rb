@@ -261,6 +261,10 @@ Valid versions: #{ruby_versions.join(", ")}
 ERROR
 
       fetch_error_message = "Could not fetch the Ruby Version specified: #{ruby_version.version}"
+      unsupported_message = <<MESSAGE
+#{ruby_version.version} is unsupported. We recommend upgrading to a supported ruby version.
+See https://devcenter.heroku.com/articles/ruby-support#ruby-versions or more info.
+MESSAGE
 
       if ruby_version.build?
         FileUtils.mkdir_p(build_ruby_path)
@@ -303,6 +307,7 @@ ERROR_MSG
             FileUtils.rm(sha_file)
           elsif ruby_version.unsupported?
             @fetchers[:unsupported].fetch_untar("#{ruby_version.version}.tgz", fetch_error_message)
+            warn unsupported_message
           else
             @fetchers[:buildpack].fetch_untar("#{ruby_version.version}.tgz", fetch_error_message)
           end
